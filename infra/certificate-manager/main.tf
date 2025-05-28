@@ -33,4 +33,3 @@ resource "aws_route53_record" "validation" {
   records = [each.value.record]
   ttl     = 60
 }
-
