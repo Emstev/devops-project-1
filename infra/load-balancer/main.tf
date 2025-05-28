@@ -60,8 +60,7 @@ resource "aws_lb_listener" "dev_proj_1_lb_https_listner" {
   port              = var.lb_https_listner_port
   protocol          = var.lb_https_listner_protocol
   ssl_policy        = "ELBSecurityPolicy-FS-1-2-Res-2019-08"
-  certificate_arn   = "arn:aws:acm:eu-west-2:324037274946:certificate/7ab22182-5e32-452b-a614-3b5d9299bd6b"
-
+  certificate_arn   = "arn:aws:acm:eu-central-1:324037274946:certificate/04e870ff-d81f-42a0-802e-552cffd6d9c9"
 
   default_action {
     type             = var.lb_listner_default_action
