@@ -1,4 +1,4 @@
-bucket_name = "cba-proj-1-jenkins-remote-state-bucket"
+bucket_name = "cba-proj-1-jenkins-remote-state-bucket2"
 name        = "environment"
 environment = "dev-1"
 
