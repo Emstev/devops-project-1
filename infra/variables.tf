@@ -57,7 +57,3 @@ variable "domain_name" {
   type = string
   description = "Name of the domain"
 }
-
-variable "target_group_arn" {
-  type = string
-}
