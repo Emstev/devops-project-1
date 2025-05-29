@@ -59,6 +59,5 @@ variable "domain_name" {
 }
 
 variable "target_group_arn" {
-  description = "The ARN of the target group"
-  type        = string
+  type = string
 }
