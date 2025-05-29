@@ -43,17 +43,6 @@ resource "aws_lb_target_group_attachment" "dev_proj_1_lb_target_group_attachment
   port             = var.lb_target_group_attachment_port
 }
 
-resource "aws_lb_listener" "dev_proj_1_lb_listner" {
-  load_balancer_arn = aws_lb.dev_proj_1_lb.arn
-  port              = var.lb_listner_port
-  protocol          = var.lb_listner_protocol
-
-  default_action {
-    type             = var.lb_listner_default_action
-    target_group_arn = var.lb_target_group_arn
-  }
-}
-
 data "aws_acm_certificate" "cert" {
   domain   = "cbaflaskapp.website"
   statuses = ["ISSUED"]
