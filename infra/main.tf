@@ -86,8 +86,3 @@ module "rds_db_instance" {
   mysql_password       = "dbpassword"
   mysql_dbname         = "devprojdb"
 }
-
-default_action {
-  type             = "forward"
-  target_group_arn = var.target_group_arn
-}
