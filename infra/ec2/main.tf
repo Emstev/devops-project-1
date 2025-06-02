@@ -5,7 +5,7 @@ variable "public_key" {}
 variable "subnet_id" {}
 variable "sg_enable_ssh_https" {}
 variable "enable_public_ip_address" {}
-variable "user_data_install_flaskApp.sh" {}
+variable "user_data_install_flaskApp" {}
 variable "ec2_sg_name_for_python_api" {}
 
 output "ssh_connection_string_for_ec2" {
@@ -38,7 +38,6 @@ resource "aws_instance" "dev_proj_1_ec2" {
 resource "aws_instance" "flask_app" {
   ami           = var.ami_id
   instance_type = var.instance_type
-  ...
 
   user_data = file("${path.module}/ec2_install_flaskApp.sh")
 
