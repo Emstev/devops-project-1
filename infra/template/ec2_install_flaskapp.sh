@@ -1,22 +1,23 @@
 #!/bin/bash
-# Update packages
+
+# Update packages and install dependencies
 apt update -y
 apt install -y python3-pip python3-venv git
 
-# Clone your Flask repo
+# Clone the Flask repo
 cd /home/ubuntu
 git clone https://github.com/Emstev/python-mysql-db-proj-1.git
 cd python-mysql-db-proj-1
 
-# Set permissions
+# Set correct ownership
 chown -R ubuntu:ubuntu /home/ubuntu/python-mysql-db-proj-1
 
-# Setup virtual environment
+# Set up virtual environment and install dependencies
 python3 -m venv venv
 source venv/bin/activate
 pip install flask pymysql
 
-# Create systemd service
+# Create systemd service file
 cat <<EOF > /etc/systemd/system/flaskapp.service
 [Unit]
 Description=Flask App Service
@@ -26,7 +27,6 @@ After=network.target
 User=ubuntu
 WorkingDirectory=/home/ubuntu/python-mysql-db-proj-1
 Environment="FLASK_APP=app.py"
-Environment="FLASK_RUN_PORT=8080"
 ExecStart=/home/ubuntu/python-mysql-db-proj-1/venv/bin/flask run --host=0.0.0.0 --port=8080
 Restart=always
 
@@ -34,14 +34,10 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-# Set permissions
-chown -R ubuntu:www-data /home/ubuntu/flaskapp
+# Set correct permissions on service file
 chmod 644 /etc/systemd/system/flaskapp.service
 
-
 # Reload systemd and start the service
-systemctl daemon-reexec
 systemctl daemon-reload
 systemctl enable flaskapp
 systemctl start flaskapp
-
