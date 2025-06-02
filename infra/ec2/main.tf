@@ -39,7 +39,7 @@ resource "aws_instance" "flask_app" {
   ami           = var.ami_id
   instance_type = var.instance_type
 
-  user_data = file("${path.module}/ec2_install_flaskApp.sh")
+  user_data = var.user_data_install_flaskApp.sh
 
   tags = {
     Name = "FlaskApp"
