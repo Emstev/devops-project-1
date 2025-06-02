@@ -34,6 +34,11 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+# Set permissions
+chown -R ubuntu:www-data /home/ubuntu/flaskapp
+chmod 644 /etc/systemd/system/flaskapp.service
+
+
 # Reload systemd and start the service
 systemctl daemon-reexec
 systemctl daemon-reload
