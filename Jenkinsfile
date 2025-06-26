@@ -77,27 +77,28 @@ pipeline {
             }
         }
 
-        stage('Deploy Flask App on EC2') {
-            steps {
-                sh '''
-                    echo "[+] Installing Python and required packages..."
-                    sudo apt update
-                    sudo apt install -y python3-pip
-                    pip3 install flask pymysql
+      stage('Deploy Flask App on EC2') {
+    steps {
+        sh '''
+            echo "[+] Installing Python and required packages..."
+            sudo apt update
+            sudo apt install -y python3-pip
 
-                    echo "[+] Preparing app directory..."
-                    sudo mkdir -p /home/ubuntu/app/templates
-                    sudo cp -r * /home/ubuntu/app
+            echo "[+] Installing Flask and pymysql with override..."
+            pip3 install flask pymysql --break-system-packages
 
-                    echo "[+] Registering systemd service..."
-                    sudo cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
-                    sudo systemctl daemon-reload
-                    sudo systemctl enable flaskapp
-                    sudo systemctl restart flaskapp
+            echo "[+] Preparing app directory..."
+            sudo mkdir -p /home/ubuntu/app/templates
+            sudo cp -r * /home/ubuntu/app
 
-                    echo "[✓] Flask app is now running via systemd"
-                '''
-            }
-        }
+            echo "[+] Registering systemd service..."
+            sudo cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
+            sudo systemctl daemon-reload
+            sudo systemctl enable flaskapp
+            sudo systemctl restart flaskapp
+
+            echo "[✓] Flask app is now running via systemd"
+        '''
     }
 }
+
