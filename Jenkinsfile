@@ -10,13 +10,9 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Clean workspace before cloning
                 deleteDir()
-
-                // Clone the Git repository
                 git branch: 'main',
                     url: 'https://github.com/Emstev/devops-project-1.git'
-
                 sh "ls -lart"
             }
         }
@@ -77,27 +73,33 @@ pipeline {
             }
         }
 
-      stage('Deploy Flask App on EC2') {
-    steps {
-        sh '''
-            echo "[+] Installing Python and required packages..."
-            sudo apt update
-            sudo apt install -y python3-pip
+        stage('Deploy Flask App on EC2') {
+            steps {
+                sh '''
+                echo "[+] Connecting to EC2 and deploying Flask app..."
 
-            echo "[+] Installing Flask and pymysql with override..."
-            pip3 install flask pymysql --break-system-packages
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/your-key.pem ubuntu@your-ec2-public-ip << 'EOF'
+                    echo "[+] Updating system..."
+                    sudo apt update -y
+                    sudo apt install -y python3-pip
 
-            echo "[+] Preparing app directory..."
-            sudo mkdir -p /home/ubuntu/app/templates
-            sudo cp -r * /home/ubuntu/app
+                    echo "[+] Cloning App Repo..."
+                    git clone https://github.com/Emstev/python-mysql-db-proj-1.git /home/ubuntu/app
+                    cd /home/ubuntu/app
 
-            echo "[+] Registering systemd service..."
-            sudo cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
-            sudo systemctl daemon-reload
-            sudo systemctl enable flaskapp
-            sudo systemctl restart flaskapp
+                    echo "[+] Installing Python requirements..."
+                    pip3 install -r requirements.txt --break-system-packages
 
-            echo "[✓] Flask app is now running via systemd"
+                    echo "[+] Copying systemd service..."
+                    sudo cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
+
+                    echo "[+] Enabling and starting Flask app..."
+                    sudo systemctl daemon-reload
+                    sudo systemctl enable flaskapp
+                    sudo systemctl restart flaskapp
+                EOF
+
+                echo "[✓] Flask app deployment completed!"
                 '''
             }
         }
