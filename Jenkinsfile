@@ -98,7 +98,8 @@ pipeline {
             sudo systemctl restart flaskapp
 
             echo "[✓] Flask app is now running via systemd"
-        '''
+                '''
+            }
+        }
     }
 }
-
