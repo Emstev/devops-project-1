@@ -48,9 +48,9 @@ variable "ec2_ami_id" {
   description = "DevOps Project 1 AMI Id for EC2 instance"
 }
 
-variable "ec2_install_flaskapp.sh" {
-  type = string
-  description = "Script for installing the Apache2"
+variable "ec2_install_flaskapp_sh" {
+  description = "User data script to install and start the Flask app"
+  type        = string
 }
 
 variable "domain_name" {
