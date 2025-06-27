@@ -1,33 +1,45 @@
 #!/bin/bash
-set -e
 
-# Make sudo passwordless for ubuntu and jenkins users (adjust if needed)
-echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# Install dependencies
+apt update -y
+apt install -y python3.12-venv python3-pip git
 
-cd /home/ubuntu || exit
+# Clone the repo if it doesn't exist
+cd /home/ubuntu
+if [ ! -d python-mysql-db-proj-1 ]; then
+  sudo -u ubuntu git clone https://github.com/Emstev/python-mysql-db-proj-1.git
+fi
 
-# Install required packages
-apt-get update -y
-apt-get install -y python3 python3-pip git
+cd python-mysql-db-proj-1
+sudo chown -R ubuntu:ubuntu .
 
-# Clone your Flask app repo
-echo "[+] Cloning repo..."
-git clone https://github.com/Emstev/python-mysql-db-proj-1.git
+# Setup virtual environment and install packages
+sudo -u ubuntu bash -c '
+  python3 -m venv venv
+  ./venv/bin/pip install --upgrade pip
+  ./venv/bin/pip install flask pymysql gunicorn
+'
 
-cd python-mysql-db-proj-1 || exit
+# Create systemd service file
+cat <<SERVICE | sudo tee /etc/systemd/system/flaskapp.service
+[Unit]
+Description=Gunicorn Flask App
+After=network.target
 
-# Install Python dependencies
-pip3 install --break-system-packages -r requirements.txt
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/python-mysql-db-proj-1
+Environment="PATH=/home/ubuntu/python-mysql-db-proj-1/venv/bin"
+ExecStart=/home/ubuntu/python-mysql-db-proj-1/venv/bin/gunicorn -w 4 -b 0.0.0.0:5000 app:app
+Restart=always
 
-# Register Flask app as a systemd service
-echo "[+] Setting up systemd service..."
-cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
-chmod 644 /etc/systemd/system/flaskapp.service
+[Install]
+WantedBy=multi-user.target
+SERVICE
 
-systemctl daemon-reexec
+# Enable and start the service
 systemctl daemon-reload
-systemctl enable flaskapp.service
-systemctl start flaskapp.service
-
-echo "[✓] Flask app is running as a service!"
+systemctl enable flaskapp
+systemctl start flaskapp
+EOF
