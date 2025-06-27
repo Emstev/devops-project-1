@@ -72,36 +72,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy Flask App on EC2') {
-            steps {
-                sh '''
-                echo "[+] Connecting to EC2 and deploying Flask app..."
-
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/your-key.pem ubuntu@your-ec2-public-ip << 'EOF'
-                    echo "[+] Updating system..."
-                    sudo apt update -y
-                    sudo apt install -y python3-pip
-
-                    echo "[+] Cloning App Repo..."
-                    git clone https://github.com/Emstev/python-mysql-db-proj-1.git /home/ubuntu/app
-                    cd /home/ubuntu/app
-
-                    echo "[+] Installing Python requirements..."
-                    pip3 install -r requirements.txt --break-system-packages
-
-                    echo "[+] Copying systemd service..."
-                    sudo cp deployment/flaskapp.service /etc/systemd/system/flaskapp.service
-
-                    echo "[+] Enabling and starting Flask app..."
-                    sudo systemctl daemon-reload
-                    sudo systemctl enable flaskapp
-                    sudo systemctl restart flaskapp
-                EOF
-
-                echo "[✓] Flask app deployment completed!"
-                '''
-            }
-        }
     }
 }
